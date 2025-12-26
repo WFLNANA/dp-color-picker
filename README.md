@@ -1,10 +1,16 @@
-# dp-color-picker
+<h1 align="center">dp-color-picker</h1>
 
+<p align="left">
+  <strong>组件名称</strong>: <code>dp-color-picker</code>
+</p>
+
+<p align="left">
+  <strong>Github 仓库</strong>: <a href="https://github.com/WFLNANA/dp-color-picker">https://github.com/WFLNANA/dp-color-picker</a>
+</p>
+<p align="left">
+<strong>在线体验</strong>: <a href="http://124.222.50.189:8082/">http://124.222.50.189:8082/</a>
+</p>
 ## 1. 组件概述
-
-**组件名称**: `dp-color-picker`  
-**版本号**: `0.0.1`
-**在线体验**: [http://124.222.50.189:8082/](http://124.222.50.189:8082/)
 
 `dp-color-picker` 是一款基于 Vue 3 + TypeScript 开发的高级颜色选择器组件。它不仅支持标准的单色（Solid）选择，还内置了强大的渐变色（Gradient）编辑功能。组件集成了透明度调节、HSV/RGB/HEX 格式切换、系统预设颜色面板以及智能的“最近使用颜色”记录功能。其设计目标是为开发者提供一个开箱即用、交互流畅且高度可配置的色彩解决方案，适用于各类设计工具、后台管理系统及个性化配置场景。
 
@@ -15,7 +21,7 @@
 
 | 单色模式 | 渐变模式 |
 | :---: | :---: |
-| <img src="./public/single.png" width="300" /> | <img src="./public/liner.png" width="300" /> |
+| <img src="http://124.222.50.189:8082/single.png" width="300" /> | <img src="http://124.222.50.189:8082/single.png/liner.png" width="300" /> |
 
 ---
 
