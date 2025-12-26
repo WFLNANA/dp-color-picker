@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/WFLNANA/dp-color-picker/compare/v0.0.4...v1.1.0) (2025-12-26)
+
+
+### Features
+
+* 实现颜色选择器组件的主要功能与样式优化 ([97aa5b5](https://github.com/WFLNANA/dp-color-picker/commit/97aa5b576788637b1bf58d9cdb52d5197c554aae))
+* 添加处理事件的handleEvent函数 ([416acfb](https://github.com/WFLNANA/dp-color-picker/commit/416acfb4af47757673ee58245b0f48db2bb03feb))
+
 ### [0.0.4](https://github.com/WFLNANA/dp-color-picker/compare/v0.0.3...v0.0.4) (2025-12-26)
 
 
