@@ -23,7 +23,7 @@ const colorNoRecent = ref('#607D8B');
 
 // Event Log
 const eventLogs = ref<string[]>([]);
-const handleEvent = (type: string, val: any) => {
+const handleEvent = (type: string, val: string) => {
   const log = `[${new Date().toLocaleTimeString()}] ${type}: ${val}`;
   eventLogs.value.unshift(log);
   if (eventLogs.value.length > 5) eventLogs.value.pop();
