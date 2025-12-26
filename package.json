@@ -7,6 +7,13 @@
     "type": "git",
     "url": "git+https://github.com/WFLNANA/dp-color-picker.git"
   },
+  "description": "A color picker component with gradient support for Vue 3",
+  "keywords": [
+    "vue",
+    "color-picker",
+    "gradient",
+    "component"
+  ],
   "author": "wfl",
   "main": "./dist/dp-color-picker.umd.js",
   "module": "./dist/dp-color-picker.es.js",
