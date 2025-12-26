@@ -52,6 +52,7 @@
 | `swatchColors` | `string[]` | 否 | `[...]` | 系统预设颜色列表。默认包含 20 种常用色。 |
 | `enableRecentColors`| `boolean` | 否 | `true` | 是否启用“最近使用颜色”功能。 |
 | `maxCount` | `number` | 否 | `10` | 最近使用颜色的最大记录数量（1-20）。 |
+| `clearable` | `boolean` | 否 | `false` | 是否显示清除按钮，点击可将颜色值重置为空字符串。 |
 
 ### 复杂 Props 示例
 
@@ -72,6 +73,7 @@ const mySwatches = [
 |:-------|:---------|:---------|
 | `update:modelValue` | `(value: string)` | 当颜色发生任何变化时实时触发（拖拽、输入、点击预设）。 |
 | `change` | `(value: string)` | 当颜色选择面板**关闭**时触发。通常用于提交最终选择结果。 |
+| `clear` | `()` | 点击清除按钮时触发。 |
 
 ---
 

@@ -4,7 +4,7 @@
  * @description  : 单选框组组件
  * @updateInfo   :
  * @Date         : 2025-12-25 15:34:51
- * @LastEditTime : 2025-12-26 11:40:13
+ * @LastEditTime : 2025-12-26 13:56:49
 -->
 
 <script lang="ts" setup>
@@ -71,9 +71,13 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  clearable: {
+    type: Boolean,
+    default: false,
+  },
 });
 
-const emit = defineEmits(['update:modelValue', 'change', 'palette-change']);
+const emit = defineEmits(['update:modelValue', 'change', 'palette-change', 'clear']);
 
 // State
 const isShow = ref(false);
@@ -83,6 +87,7 @@ const panelRef = ref<InstanceType<typeof Panel> | null>(null);
 // Helper to get current color string for trigger display
 const getCurrentColorString = () => {
   const val = props.modelValue;
+  if (val === '') return 'transparent';
   if (!val) return props.defaultColor;
   return val;
 };
@@ -133,6 +138,13 @@ onUnmounted(() => {
 const handleUpdateModelValue = (val: string) => {
   emit('update:modelValue', val);
 };
+
+const handleClear = (e: MouseEvent) => {
+  e.stopPropagation();
+  emit('update:modelValue', '');
+  emit('change', '');
+  emit('clear');
+};
 </script>
 
 <template>
@@ -147,6 +159,13 @@ const handleUpdateModelValue = (val: string) => {
           getCurrentHex()
         }}</span>
         <span class="color-text" v-else></span>
+      </div>
+      <div v-if="clearable && modelValue" class="ik-color-picker__clear" @click="handleClear">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
+          <path
+            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+          />
+        </svg>
       </div>
     </div>
 
@@ -181,7 +200,6 @@ const handleUpdateModelValue = (val: string) => {
   &__trigger {
     border: 1px solid #444;
     /* Dark mode border */
-    padding: 2px 4px;
     border-radius: 3px;
     cursor: pointer;
     background: #2b2b2b;
@@ -189,6 +207,9 @@ const handleUpdateModelValue = (val: string) => {
     transition: all 0.2s;
     height: 32px;
     box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
     &:hover {
       border-color: #0052d9;
@@ -198,6 +219,8 @@ const handleUpdateModelValue = (val: string) => {
       display: flex;
       align-items: center;
       height: 100%;
+      flex: 1;
+      overflow: hidden;
     }
 
     .color-block {
@@ -206,7 +229,6 @@ const handleUpdateModelValue = (val: string) => {
       border-radius: 2px;
       border: 1px solid #555;
       /* Dark mode border */
-      margin-right: 8px;
       flex-shrink: 0;
       display: flex;
       align-items: center;
@@ -234,6 +256,24 @@ const handleUpdateModelValue = (val: string) => {
       &.open {
         transform: rotate(180deg);
       }
+    }
+  }
+
+  &__clear {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    padding: 2px;
+    border-radius: 50%;
+    transition: all 0.2s;
+    position: absolute;
+    right: 4px;
+    background: rgb(0 0 0 / 42%);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
     }
   }
 

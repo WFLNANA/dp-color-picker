@@ -24,6 +24,9 @@ const colorRadial = ref('radial-gradient(circle at center, #FF0000 0%, #00FF00 1
 // 7. No Recent Colors
 const colorNoRecent = ref('#607D8B');
 
+// 8. Clearable
+const colorClearable = ref('#FF9800');
+
 // Event Log
 const eventLogs = ref<string[]>([]);
 const handleEvent = (type: string, val: string) => {
@@ -134,6 +137,21 @@ const handleEvent = (type: string, val: string) => {
           />
         </div>
         <div class="value-display">Value: {{ colorNoRecent }}</div>
+      </div>
+
+      <!-- 8. Clearable -->
+      <div class="card">
+        <h3>8. Clearable</h3>
+        <p class="desc"><code>clearable</code> prop enabled.</p>
+        <div class="demo-box">
+          <DpColorPicker
+            v-model="colorClearable"
+            clearable
+            @change="(v: any) => handleEvent('change (clearable)', v)"
+            @clear="() => handleEvent('clear', 'cleared')"
+          />
+        </div>
+        <div class="value-display">Value: '{{ colorClearable }}'</div>
       </div>
     </div>
 
