@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.3](https://github.com/WFLNANA/dp-color-picker/compare/v0.0.2...v0.0.3) (2025-12-26)
+
+
+### Features
+
+* **color-picker:** 添加清除按钮功能 ([e8dce72](https://github.com/WFLNANA/dp-color-picker/commit/e8dce726e2bf328a5b166e3908860142d0a854fb))
+
 ### [0.0.2](https://github.com/WFLNANA/dp-color-picker/compare/v0.0.1...v0.0.2) (2025-12-26)
 
 
