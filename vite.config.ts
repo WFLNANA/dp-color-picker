@@ -1,3 +1,11 @@
+/*
+ * @Author       : wfl
+ * @LastEditors  : wfl
+ * @description  : 
+ * @updateInfo   : 
+ * @Date         : 2025-12-26 09:27:03
+ * @LastEditTime : 2025-12-26 10:46:44
+ */
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import dts from 'vite-plugin-dts';

@@ -1,8 +1,12 @@
 <!--
- * @Author       : Trae AI
- * @description  : Custom Color Picker Component (Replicating TDesign ColorPicker)
- * @Date         : 2025-12-25
+ * @Author       : wfl
+ * @LastEditors  : wfl
+ * @description  : 单选框组组件
+ * @updateInfo   :
+ * @Date         : 2025-12-25 15:34:51
+ * @LastEditTime : 2025-12-25 15:37:40
 -->
+
 <script lang="ts" setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import {
@@ -397,6 +401,39 @@ const handleAlphaDown = (e: MouseEvent) => {
 // 4. Gradient Bar
 const gradientBarRef = ref<HTMLElement | null>(null);
 
+// 4.1 Gradient Angle Slider
+const gradientAngleSliderRef = ref<HTMLElement | null>(null);
+const handleGradientAngleDown = (e: MouseEvent) => {
+  e.preventDefault();
+  if (!gradientAngleSliderRef.value) return;
+  const rect = gradientAngleSliderRef.value.getBoundingClientRect();
+  let rafId: number | null = null;
+  isDragging.value = true;
+
+  const onMove = (me: MouseEvent) => {
+    if (rafId) return;
+    rafId = requestAnimationFrame(() => {
+      let x = me.clientX - rect.left;
+      x = Math.max(0, Math.min(x, rect.width));
+      // Map 0-width to 0-360
+      gradient.value.degree = Math.round((x / rect.width) * 360);
+      updateModel();
+      rafId = null;
+    });
+  };
+
+  const onUp = () => {
+    if (rafId) cancelAnimationFrame(rafId);
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+    isDragging.value = false;
+  };
+
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+  onMove(e);
+};
+
 const handleGradientBarDblClick = (e: MouseEvent) => {
   if (!gradientBarRef.value) return;
   const rect = gradientBarRef.value.getBoundingClientRect();
@@ -641,11 +678,11 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
     <!-- Trigger -->
     <div class="ik-color-picker__trigger" ref="triggerRef" @click="togglePanel">
       <div class="ik-color-picker__trigger--inner">
-        <span class="color-block" :style="{ background: getCurrentColorString() }"></span>
+        <span class="color-block" :style="{ background: getCurrentColorString() }">
+          {{ modelValue }}
+        </span>
         <span class="color-text" v-if="mode !== 'gradient'">{{ getCurrentHex() }}</span>
         <span class="color-text" v-else></span>
-        <!-- Hide text for gradient, show full preview in block? Or just 'Gradient' -->
-        <span class="arrow-icon" :class="{ open: isShow }"></span>
       </div>
     </div>
 
@@ -671,6 +708,23 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
 
       <!-- Gradient Bar (Visible only in Gradient Mode) -->
       <div v-if="mode === 'gradient'" class="ik-color-picker__gradient-tools">
+        <!-- Angle Slider -->
+        <div class="gradient-angle-slider-wrapper">
+          <div class="angle-label start">0°</div>
+          <div
+            class="gradient-angle-slider"
+            ref="gradientAngleSliderRef"
+            @mousedown="handleGradientAngleDown"
+          >
+            <div
+              class="slider-thumb"
+              :style="{ left: `${(gradient.degree / 360) * 100}%` }"
+            ></div>
+          </div>
+          <div class="angle-label end">360°</div>
+          <div class="current-angle">{{ gradient.degree }}°</div>
+        </div>
+
         <div class="gradient-bar-wrapper">
           <div
             class="gradient-bar"
@@ -688,10 +742,6 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
               @contextmenu.prevent="deleteStop(index)"
             ></div>
           </div>
-        </div>
-        <div class="gradient-angle">
-          <input type="number" v-model="gradient.degree" @input="updateModel" />
-          <span class="unit">°</span>
         </div>
       </div>
 
@@ -794,15 +844,15 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
           <span class="clear-recent" @click="clearRecentColors" title="清除最近使用">×</span>
         </div>
         <div class="swatches-list">
-        <div
-          v-for="item in recentColorsList"
-          :key="item.color"
-          class="swatch-item"
-          :style="{ background: item.color }"
-          :title="`${item.color} (${formatTime(item.timestamp)})`"
-          @click="selectSwatch(item.color, true)"
-        ></div>
-      </div>
+          <div
+            v-for="item in recentColorsList"
+            :key="item.color"
+            class="swatch-item"
+            :style="{ background: item.color }"
+            :title="`${item.color} (${formatTime(item.timestamp)})`"
+            @click="selectSwatch(item.color, true)"
+          ></div>
+        </div>
       </div>
 
       <!-- Swatches -->
@@ -856,13 +906,16 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
     }
 
     .color-block {
-      width: 18px;
-      height: 18px;
+      width: 100%;
+      height: 100%;
       border-radius: 2px;
       border: 1px solid #555;
       /* Dark mode border */
       margin-right: 8px;
       flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .color-text {
@@ -936,12 +989,62 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
 
   &__gradient-tools {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     margin-bottom: 12px;
     gap: 8px;
 
+    .gradient-angle-slider-wrapper {
+      width: 100%;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      margin-bottom: 4px;
+
+      .angle-label {
+        font-size: 10px;
+        color: #999;
+        width: 24px;
+        text-align: center;
+      }
+
+      .current-angle {
+        font-size: 10px;
+        color: #e0e0e0;
+        width: 30px;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .gradient-angle-slider {
+        flex: 1;
+        height: 4px;
+        background: #444;
+        border-radius: 2px;
+        position: relative;
+        cursor: pointer;
+
+        .slider-thumb {
+          position: absolute;
+          top: 50%;
+          width: 8px;
+          height: 8px;
+          background: #fff;
+          border-radius: 50%;
+          box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+          transform: translate(-50%, -50%);
+          pointer-events: none;
+        }
+
+        &:hover {
+          background: #555;
+        }
+      }
+    }
+
     .gradient-bar-wrapper {
-      flex: 1;
+      width: 100%;
       height: 12px;
       position: relative;
     }
@@ -977,32 +1080,6 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
           transform: translate(-50%, -50%) scale(1.2);
           z-index: 2;
         }
-      }
-    }
-
-    .gradient-angle {
-      display: flex;
-      align-items: center;
-      width: 50px;
-      border: 1px solid #444;
-      border-radius: 2px;
-      padding: 0 4px;
-      background: #333;
-
-      input {
-        width: 100%;
-        border: none;
-        outline: none;
-        text-align: right;
-        font-size: 12px;
-        padding: 2px 0;
-        background: transparent;
-        color: #e0e0e0;
-      }
-
-      .unit {
-        color: #999;
-        margin-left: 2px;
       }
     }
   }

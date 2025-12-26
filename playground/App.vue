@@ -18,7 +18,7 @@ const handleChange = (val: string) => {
 <template>
   <div class="playground">
     <h1>DpColorPicker Playground</h1>
-    
+
     <div class="section">
       <h2>Solid Color</h2>
       <DpColorPicker v-model="color" @change="handleChange" />
