@@ -10,6 +10,12 @@
 **技术依赖**:
 - Vue: `^3.5.24`
 
+### 效果预览
+
+| 单色模式 | 渐变模式 |
+| :---: | :---: |
+| <img src="./public/single.png" width="300" /> | <img src="./public/liner.png" width="300" /> |
+
 ---
 
 ## 2. 能力说明
