@@ -21,7 +21,7 @@
 
 | 单色模式 | 渐变模式 |
 | :---: | :---: |
-| <img src="http://124.222.50.189:8082/single.png" width="300" /> | <img src="http://124.222.50.189:8082/single.png/liner.png" width="300" /> |
+| <img src="http://124.222.50.189:8082/single.png" width="300" /> | <img src="http://124.222.50.189:8082/liner.png" width="300" /> |
 
 ---
 
