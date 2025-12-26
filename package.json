@@ -16,6 +16,7 @@
     "format": "prettier --write .",
     "test": "jest",
     "test:coverage": "jest --coverage",
+    "pub": "npm publish --access public && pnpm release",
     "release": "standard-version"
   },
   "dependencies": {
