@@ -4,7 +4,7 @@
  * @description  : 
  * @updateInfo   : 
  * @Date         : 2025-12-26 09:27:03
- * @LastEditTime : 2025-12-26 10:46:44
+ * @LastEditTime : 2025-12-26 14:46:23
  */
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
@@ -13,11 +13,16 @@ import { resolve } from 'path';
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    port: 8080,
+    host: true
+  },
   plugins: [
     vue(),
     dts({
       include: ['src/**/*.ts', 'src/**/*.vue'],
       insertTypesEntry: true,
+      tsconfigPath: './tsconfig.app.json',
     }),
   ],
   resolve: {

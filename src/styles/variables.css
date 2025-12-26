@@ -1,0 +1,72 @@
+:root {
+  /* Brand Colors */
+  /* 主色：用于高亮、选中状态、边框聚焦 */
+  --dp-cp-primary-color: #0052d9;
+  /* 主色文字：用于深色背景上的高亮文字 */
+  --dp-cp-primary-text: #4096ff;
+  /* 危险色：用于删除、清除操作 */
+  --dp-cp-danger-color: #ff4d4f;
+
+  /* Text Colors */
+  /* 主要文字颜色 */
+  --dp-cp-text-color: #e0e0e0;
+  /* 次要文字颜色：图标、提示信息 */
+  --dp-cp-text-secondary: #999999;
+  /* 浅色文字 */
+  --dp-cp-text-light: #cccccc;
+  /* 反色文字（白色） */
+  --dp-cp-text-inverse: #ffffff;
+  /* 黑色文字/背景 */
+  --dp-cp-color-black: #000000;
+
+  /* Background Colors */
+  /* 面板背景色 */
+  --dp-cp-bg-panel: #2b2b2b;
+  /* 触发器背景色 */
+  --dp-cp-bg-trigger: #2b2b2b;
+  /* 输入框背景色 */
+  --dp-cp-bg-input: #333333;
+  /* 标签页背景色 */
+  --dp-cp-bg-tab: #3a3a3a;
+  /* 激活标签页背景色 */
+  --dp-cp-bg-tab-active: #2d2c2c;
+  /* 标签页分割线背景 */
+  --dp-cp-bg-tab-divider: #48494b;
+  /* 遮罩层背景 */
+  --dp-cp-bg-overlay: rgba(0, 0, 0, 0.1);
+  /* 清除按钮背景 */
+  --dp-cp-bg-clear: rgba(0, 0, 0, 0.42);
+  /* 清除按钮悬停背景 */
+  --dp-cp-bg-clear-hover: rgba(255, 255, 255, 0.1);
+
+  /* Border Colors */
+  /* 通用边框颜色 */
+  --dp-cp-border-color: #444444;
+  /* 深色边框颜色 */
+  --dp-cp-border-color-dark: #555555;
+
+  /* Shadow Colors (RGBA) */
+  /* 基础阴影颜色 (0.3) */
+  --dp-cp-shadow-color-base: rgba(0, 0, 0, 0.3);
+  /* 浅色阴影颜色 (0.2) */
+  --dp-cp-shadow-color-light: rgba(0, 0, 0, 0.2);
+  /* 深色阴影颜色 (0.4) */
+  --dp-cp-shadow-color-dark: rgba(0, 0, 0, 0.4);
+  /* 重阴影颜色 (0.5) */
+  --dp-cp-shadow-color-heavy: rgba(0, 0, 0, 0.5);
+  /* 最深阴影颜色 (0.6) */
+  --dp-cp-shadow-color-deep: rgba(0, 0, 0, 0.6);
+
+  /* Gradients & Patterns */
+  /* 色相条渐变 */
+  --dp-cp-gradient-hue: linear-gradient(to right, #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%);
+  /* 饱和度白色渐变 */
+  --dp-cp-gradient-white: linear-gradient(to right, #fff, rgba(255, 255, 255, 0));
+  /* 饱和度黑色渐变 */
+  --dp-cp-gradient-black: linear-gradient(to top, #000, rgba(0, 0, 0, 0));
+  /* 棋盘格背景图案 */
+  --dp-cp-bg-checkerboard: linear-gradient(45deg, #555 25%, transparent 25%),
+    linear-gradient(-45deg, #555 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #555 75%),
+    linear-gradient(-45deg, transparent 75%, #555 75%);
+}

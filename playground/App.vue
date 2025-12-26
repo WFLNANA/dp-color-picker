@@ -1,265 +1,644 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, reactive, computed } from 'vue';
 import DpColorPicker from '../src/index.vue';
 
-// 1. Basic Solid
-const colorSolid = ref('#1976D2');
+// --- Playground State ---
+const playgroundColor = ref('#1976D2');
+const playgroundConfig = reactive({
+  enableAlpha: true,
+  format: 'HEX',
+  enableRecentColors: true,
+  clearable: true,
+  overlay: false,
+  placement: 'bottom-start',
+  defaultColor: '#000000',
+  maxCount: 10,
+  zIndex: 2000,
+  threshold: 20,
+  animationDuration: 200,
+  useCustomSwatches: false,
+  showText: true,
+});
 
-// 2. Basic Gradient
-const colorGradient = ref('linear-gradient(90deg, #FF0000 0%, #00FF00 100%)');
+const formatOptions = ['HEX', 'RGB'];
+const placementOptions = ['bottom-start', 'bottom-end', 'top-start', 'top-end'];
 
-// 3. Alpha Disabled
-const colorNoAlpha = ref('#FF5722');
+// --- Examples State ---
+const gradientColor = ref('linear-gradient(90deg, #FF0000 0%, #00FF00 100%)');
+const minimalColor = ref('#FF5722');
+const customSwatchesColor = ref('#9C27B0');
+const customSwatches = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#00FFFF', '#FF00FF'];
 
-// 4. RGB Format
-const colorRgb = ref('rgba(0, 150, 136, 1)');
-
-// 5. Custom Swatches
-const colorCustomSwatches = ref('#9C27B0');
-const mySwatches = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#00FFFF', '#FF00FF'];
-
-// 6. Radial Gradient
-const colorRadial = ref('radial-gradient(circle at center, #FF0000 0%, #00FF00 100%)');
-
-// 7. No Recent Colors
-const colorNoRecent = ref('#607D8B');
-
-// 8. Clearable
-const colorClearable = ref('#FF9800');
-
-// Event Log
+// --- Event Logging ---
 const eventLogs = ref<string[]>([]);
-const handleEvent = (type: string, val: string) => {
-  const log = `[${new Date().toLocaleTimeString()}] ${type}: ${val}`;
-  eventLogs.value.unshift(log);
-  if (eventLogs.value.length > 5) eventLogs.value.pop();
+const handleEvent = (type: string, val: any) => {
+  const time = new Date().toLocaleTimeString();
+  const valueStr = typeof val === 'object' ? JSON.stringify(val) : String(val);
+  eventLogs.value.unshift(`[${time}] ${type}: ${valueStr}`);
+  if (eventLogs.value.length > 20) eventLogs.value.pop();
+};
+
+// --- Code Preview ---
+const codePreview = computed(() => {
+  const props = [];
+  props.push(`v-model="color"`);
+  if (!playgroundConfig.enableAlpha) props.push(`:enableAlpha="false"`);
+  if (playgroundConfig.format !== 'HEX') props.push(`format="${playgroundConfig.format}"`);
+  if (!playgroundConfig.enableRecentColors) props.push(`:enableRecentColors="false"`);
+  if (playgroundConfig.clearable) props.push(`clearable`);
+  if (playgroundConfig.overlay) props.push(`overlay`);
+  if (playgroundConfig.placement !== 'bottom-start')
+    props.push(`placement="${playgroundConfig.placement}"`);
+  if (playgroundConfig.defaultColor !== '#000000')
+    props.push(`defaultColor="${playgroundConfig.defaultColor}"`);
+  if (playgroundConfig.maxCount !== 10) props.push(`:maxCount="${playgroundConfig.maxCount}"`);
+  if (playgroundConfig.zIndex !== 2000) props.push(`:zIndex="${playgroundConfig.zIndex}"`);
+  if (playgroundConfig.threshold !== 20) props.push(`:threshold="${playgroundConfig.threshold}"`);
+  if (playgroundConfig.animationDuration !== 200)
+    props.push(`:animationDuration="${playgroundConfig.animationDuration}"`);
+  if (!playgroundConfig.showText) props.push(`:showText="false"`);
+  if (playgroundConfig.useCustomSwatches) props.push(`:swatchColors="[...] "`); // Abbreviated for preview
+
+  return `<DpColorPicker
+  ${props.join('\n  ')}
+/>`;
+});
+
+const copyCode = () => {
+  navigator.clipboard.writeText(codePreview.value);
+  // Could add toast here
 };
 </script>
 
 <template>
-  <div class="playground">
-    <header>
-      <h1>DpColorPicker Playground</h1>
-      <p>DpColorPicker 组件演示(渐变模式下双击添加点位，右击删除点位)</p>
+  <div class="page-container">
+    <!-- Header -->
+    <header class="hero">
+      <div class="hero-content">
+        <h1>DpColorPicker</h1>
+        <p class="subtitle">Modern, accessible, and highly customizable color picker for Vue 3.</p>
+        <div class="install-cmd">
+          <code>npm install dp-color-picker</code>
+          <button
+            class="copy-btn"
+            @click="() => navigator.clipboard.writeText('npm install dp-color-picker')"
+          >
+            Copy
+          </button>
+        </div>
+      </div>
     </header>
 
-    <div class="grid">
-      <!-- 1. Basic Solid -->
-      <div class="card">
-        <h3>1. Basic Solid Color</h3>
-        <p class="desc">Default configuration with HEX color.</p>
-        <div class="demo-box">
-          <DpColorPicker
-            v-model="colorSolid"
-            @change="(v: any) => handleEvent('change (solid)', v)"
-          />
-        </div>
-        <div class="value-display">Value: {{ colorSolid }}</div>
-      </div>
+    <main class="main-content">
+      <!-- Examples Grid -->
+      <section class="examples-section">
+        <h2>示例</h2>
+        <div class="examples-grid">
+          <!-- Gradient -->
+          <div class="example-card">
+            <div class="card-header">
+              <h3>渐变色支持</h3>
+              <p>原生支持 linear-gradient 格式。</p>
+            </div>
+            <div class="card-body">
+              <DpColorPicker
+                v-model="gradientColor"
+                @change="(v: any) => handleEvent('gradient-change', v)"
+              />
+              <div class="mini-value">{{ gradientColor }}</div>
+            </div>
+          </div>
 
-      <!-- 2. Gradient -->
-      <div class="card">
-        <h3>2. Gradient Mode</h3>
-        <p class="desc">Supports linear-gradient strings.</p>
-        <div class="demo-box">
-          <DpColorPicker
-            v-model="colorGradient"
-            @change="(v: any) => handleEvent('change (gradient)', v)"
-          />
-        </div>
-        <div class="value-display">Value: {{ colorGradient }}</div>
-      </div>
+          <!-- Minimal -->
+          <div class="example-card">
+            <div class="card-header">
+              <h3>极简配置</h3>
+              <p>无透明度，无最近使用颜色。</p>
+            </div>
+            <div class="card-body">
+              <DpColorPicker
+                v-model="minimalColor"
+                :enableAlpha="false"
+                :enableRecentColors="false"
+                @change="(v: any) => handleEvent('minimal-change', v)"
+              />
+              <div class="mini-value">{{ minimalColor }}</div>
+            </div>
+          </div>
 
-      <!-- 3. No Alpha -->
-      <div class="card">
-        <h3>3. Alpha Disabled</h3>
-        <p class="desc"><code>:enableAlpha="false"</code></p>
-        <div class="demo-box">
-          <DpColorPicker
-            v-model="colorNoAlpha"
-            :enableAlpha="false"
-            @change="(v: any) => handleEvent('change (no-alpha)', v)"
-          />
+          <!-- Custom Swatches -->
+          <div class="example-card">
+            <div class="card-header">
+              <h3>自定义预设颜色</h3>
+              <p>传入自定义的色板数组。</p>
+            </div>
+            <div class="card-body">
+              <DpColorPicker
+                v-model="customSwatchesColor"
+                :swatchColors="customSwatches"
+                @change="(v: any) => handleEvent('swatch-change', v)"
+              />
+              <div class="mini-value">{{ customSwatchesColor }}</div>
+            </div>
+          </div>
         </div>
-        <div class="value-display">Value: {{ colorNoAlpha }}</div>
-      </div>
+      </section>
 
-      <!-- 4. RGB Format -->
-      <div class="card">
-        <h3>4. RGB Format</h3>
-        <p class="desc"><code>format="RGB"</code></p>
-        <div class="demo-box">
-          <DpColorPicker
-            v-model="colorRgb"
-            format="RGB"
-            @change="(v: any) => handleEvent('change (rgb)', v)"
-          />
-        </div>
-        <div class="value-display">Value: {{ colorRgb }}</div>
-      </div>
+      <!-- Playground Section -->
+      <section class="playground-section">
+        <h2>交互式演示</h2>
+        <div class="playground-container">
+          <!-- Left: Preview -->
+          <div class="preview-panel">
+            <div
+              class="component-wrapper"
+              :style="{ backgroundColor: playgroundConfig.overlay ? '#f5f5f5' : 'transparent' }"
+            >
+              <DpColorPicker
+                v-model="playgroundColor"
+                :enableAlpha="playgroundConfig.enableAlpha"
+                :format="playgroundConfig.format"
+                :enableRecentColors="playgroundConfig.enableRecentColors"
+                :clearable="playgroundConfig.clearable"
+                :overlay="playgroundConfig.overlay"
+                :placement="playgroundConfig.placement"
+                :defaultColor="playgroundConfig.defaultColor"
+                :maxCount="playgroundConfig.maxCount"
+                :zIndex="playgroundConfig.zIndex"
+                :threshold="playgroundConfig.threshold"
+                :animationDuration="playgroundConfig.animationDuration"
+                :swatchColors="playgroundConfig.useCustomSwatches ? customSwatches : undefined"
+                :showText="playgroundConfig.showText"
+                @change="(v: any) => handleEvent('change', v)"
+                @clear="() => handleEvent('clear', '')"
+                @palette-change="(v: any) => handleEvent('palette-change', v)"
+              />
+            </div>
+            <div class="value-display">
+              <span class="label">当前值:</span>
+              <code class="value">{{ playgroundColor }}</code>
+            </div>
+          </div>
 
-      <!-- 5. Custom Swatches -->
-      <div class="card">
-        <h3>5. Custom Swatches</h3>
-        <p class="desc">Custom <code>swatchColors</code> prop.</p>
-        <div class="demo-box">
-          <DpColorPicker
-            v-model="colorCustomSwatches"
-            :swatchColors="mySwatches"
-            @change="(v: any) => handleEvent('change (custom-swatch)', v)"
-          />
-        </div>
-        <div class="value-display">Value: {{ colorCustomSwatches }}</div>
-      </div>
+          <!-- Right: Controls -->
+          <div class="controls-panel">
+            <div class="control-group">
+              <h3>代码预览</h3>
+              <div class="code-block">
+                <pre>{{ codePreview }}</pre>
+                <button class="copy-btn-small" @click="copyCode">复制</button>
+              </div>
+            </div>
+            <div class="control-group">
+              <h3>配置项</h3>
 
-      <!-- 6. Radial Gradient -->
-      <div class="card">
-        <h3>6. Radial Gradient</h3>
-        <p class="desc">Supports radial-gradient strings.</p>
-        <div class="demo-box">
-          <DpColorPicker
-            v-model="colorRadial"
-            @change="(v: any) => handleEvent('change (radial)', v)"
-          />
-        </div>
-        <div class="value-display">Value: {{ colorRadial }}</div>
-      </div>
+              <div class="control-item">
+                <label>颜色格式 (Format)</label>
+                <select v-model="playgroundConfig.format">
+                  <option v-for="opt in formatOptions" :key="opt" :value="opt">{{ opt }}</option>
+                </select>
+              </div>
 
-      <!-- 7. No Recent Colors -->
-      <div class="card">
-        <h3>7. No Recent Colors</h3>
-        <p class="desc"><code>:enableRecentColors="false"</code></p>
-        <div class="demo-box">
-          <DpColorPicker
-            v-model="colorNoRecent"
-            :enableRecentColors="false"
-            @change="(v: any) => handleEvent('change (no-recent)', v)"
-          />
-        </div>
-        <div class="value-display">Value: {{ colorNoRecent }}</div>
-      </div>
+              <div class="control-item">
+                <label>弹出位置 (Placement)</label>
+                <select v-model="playgroundConfig.placement">
+                  <option v-for="opt in placementOptions" :key="opt" :value="opt">{{ opt }}</option>
+                </select>
+              </div>
 
-      <!-- 8. Clearable -->
-      <div class="card">
-        <h3>8. Clearable</h3>
-        <p class="desc"><code>clearable</code> prop enabled.</p>
-        <div class="demo-box">
-          <DpColorPicker
-            v-model="colorClearable"
-            clearable
-            @change="(v: any) => handleEvent('change (clearable)', v)"
-            @clear="() => handleEvent('clear', 'cleared')"
-          />
-        </div>
-        <div class="value-display">Value: '{{ colorClearable }}'</div>
-      </div>
-    </div>
+              <div class="control-item">
+                <label>默认颜色 (Default Color)</label>
+                <div class="input-row">
+                  <input type="color" v-model="playgroundConfig.defaultColor" />
+                  <input type="text" v-model="playgroundConfig.defaultColor" class="text-input" />
+                </div>
+              </div>
 
-    <!-- Event Logs -->
-    <div class="logs-section">
-      <h3>Event Logs</h3>
-      <div class="logs-container">
-        <div v-for="(log, index) in eventLogs" :key="index" class="log-item">{{ log }}</div>
-        <div v-if="eventLogs.length === 0" class="no-logs">
-          Interact with pickers to see events...
+              <div class="control-item">
+                <label>最大最近颜色数 (Max Recent Colors)</label>
+                <input
+                  type="number"
+                  v-model.number="playgroundConfig.maxCount"
+                  min="1"
+                  max="20"
+                  class="number-input"
+                />
+              </div>
+
+              <div class="control-item">
+                <label>翻转阈值 (Flip Threshold px)</label>
+                <input
+                  type="number"
+                  v-model.number="playgroundConfig.threshold"
+                  class="number-input"
+                />
+              </div>
+
+              <div class="control-item">
+                <label>动画时长 (Animation Duration ms)</label>
+                <input
+                  type="number"
+                  v-model.number="playgroundConfig.animationDuration"
+                  step="50"
+                  class="number-input"
+                />
+              </div>
+
+              <div class="control-item checkbox">
+                <label>
+                  <input type="checkbox" v-model="playgroundConfig.useCustomSwatches" />
+                  使用自定义色板
+                </label>
+              </div>
+
+              <div class="control-item checkbox">
+                <label>
+                  <input type="checkbox" v-model="playgroundConfig.showText" />
+                  显示色值文本
+                </label>
+              </div>
+
+              <div class="control-item checkbox">
+                <label>
+                  <input type="checkbox" v-model="playgroundConfig.enableAlpha" />
+                  启用透明度 (Alpha)
+                </label>
+              </div>
+
+              <div class="control-item checkbox">
+                <label>
+                  <input type="checkbox" v-model="playgroundConfig.enableRecentColors" />
+                  显示最近使用颜色
+                </label>
+              </div>
+
+              <div class="control-item checkbox">
+                <label>
+                  <input type="checkbox" v-model="playgroundConfig.clearable" />
+                  可清空 (Clearable)
+                </label>
+              </div>
+
+              <div class="control-item checkbox">
+                <label>
+                  <input type="checkbox" v-model="playgroundConfig.overlay" />
+                  显示遮罩层 (Overlay)
+                </label>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </section>
+
+      <!-- Event Logs -->
+      <section class="logs-section">
+        <div class="logs-header">
+          <h2>事件日志</h2>
+          <button @click="clearLogs">清空</button>
+        </div>
+        <div class="logs-container">
+          <div v-if="eventLogs.length === 0" class="empty-logs">操作组件以查看事件...</div>
+          <div v-else v-for="(log, idx) in eventLogs" :key="idx" class="log-entry">{{ log }}</div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>DpColorPicker &copy; {{ new Date().getFullYear() }}</p>
+    </footer>
   </div>
 </template>
 
 <style scoped lang="scss">
-.playground {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 40px 20px;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+.page-container {
+  min-height: 100vh;
+  background-color: #f8f9fa;
   color: #333;
-
-  header {
-    text-align: center;
-    margin-bottom: 40px;
-
-    h1 {
-      margin: 0 0 10px;
-      font-size: 2.5rem;
-      color: #007fff;
-    }
-
-    p {
-      color: #a9a9a9;
-      font-size: 1.1rem;
-    }
-  }
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans',
+    'Helvetica Neue', sans-serif;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(300px, 1fr));
-  gap: 24px;
-  margin-bottom: 40px;
-}
+.hero {
+  background: linear-gradient(135deg, #0052d9 0%, #0033a0 100%);
+  color: white;
+  padding: 60px 20px;
+  text-align: center;
 
-.card {
-  background: #000000;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  // border: 1px solid #f0f0f0;
-  display: flex;
-  flex-direction: column;
-
-  h3 {
-    margin: 0 0 8px;
-    font-size: 1.1rem;
-    color: #568fc7;
+  h1 {
+    font-size: 3.5rem;
+    margin: 0 0 16px;
+    font-weight: 700;
   }
 
-  .desc {
-    margin: 0 0 20px;
-    font-size: 0.9rem;
-    color: #bdbbbb;
+  .subtitle {
+    font-size: 1.25rem;
+    opacity: 0.9;
+    margin: 0 0 32px;
+  }
+
+  .install-cmd {
+    background: rgba(0, 0, 0, 0.3);
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    border-radius: 8px;
+    backdrop-filter: blur(4px);
 
     code {
-      background: #181818;
-      padding: 8px;
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      margin-right: 12px;
+      font-size: 1rem;
+    }
+
+    .copy-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      padding: 4px 12px;
       border-radius: 4px;
-      font-family: monospace;
-      color: #e83e8c;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: background 0.2s;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
     }
   }
+}
 
-  .demo-box {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 45px;
+.main-content {
+  max-width: 1200px;
+  margin: -40px auto 0;
+  padding: 0 20px 60px;
+  position: relative;
+  z-index: 10;
+}
+
+section {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  margin-bottom: 32px;
+  padding: 32px;
+  border: 1px solid #eaeaea;
+
+  h2 {
+    margin: 0 0 24px;
+    font-size: 1.5rem;
+    color: #1a1a1a;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 12px;
+  }
+}
+
+.playground-container {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 32px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.preview-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 40px;
+  border: 1px dashed #ddd;
+
+  .component-wrapper {
+    margin-bottom: 32px;
+    padding: 20px;
     border-radius: 8px;
-    margin-bottom: 16px;
+    transition: background-color 0.3s;
   }
 
   .value-display {
-    font-family: monospace;
-    font-size: 0.85rem;
+    text-align: center;
+
+    .label {
+      display: block;
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .value {
+      background: #f5f5f5;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-family: monospace;
+      color: #0052d9;
+      font-weight: 600;
+    }
+  }
+}
+
+.controls-panel {
+  .control-group {
+    margin-bottom: 24px;
+
+    h3 {
+      font-size: 1.1rem;
+      margin: 0 0 16px;
+      color: #333;
+    }
+  }
+
+  .control-item {
+    margin-bottom: 12px;
+
+    label {
+      display: block;
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 4px;
+    }
+
+    select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: white;
+
+      &:focus {
+        border-color: #0052d9;
+        outline: none;
+      }
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+
+      input[type='color'] {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background: white;
+        cursor: pointer;
+      }
+    }
+
+    .text-input,
+    .number-input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: white;
+
+      &:focus {
+        border-color: #0052d9;
+        outline: none;
+      }
+    }
+
+    &.checkbox {
+      label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        margin-bottom: 0;
+      }
+
+      input[type='checkbox'] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .code-block {
+    position: relative;
     background: #282c34;
-    color: #abb2bf;
-    padding: 10px;
     border-radius: 6px;
-    word-break: break-all;
+    padding: 16px;
+
+    pre {
+      margin: 0;
+      color: #abb2bf;
+      font-family: monospace;
+      font-size: 0.85rem;
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
+
+    .copy-btn-small {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: white;
+      font-size: 0.75rem;
+      padding: 2px 6px;
+      border-radius: 3px;
+      cursor: pointer;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+    }
+  }
+}
+
+.examples-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.example-card {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .card-header {
+    background: #f9f9f9;
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+
+    h3 {
+      margin: 0 0 4px;
+      font-size: 1.1rem;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.85rem;
+      color: #666;
+    }
+  }
+
+  .card-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+
+    .mini-value {
+      font-family: monospace;
+      font-size: 0.8rem;
+      color: #888;
+      background: #f5f5f5;
+      padding: 4px 8px;
+      border-radius: 4px;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 }
 
 .logs-section {
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  border: 1px solid #3f3d3d;
+  .logs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 12px;
 
-  h3 {
-    margin-top: 0;
+    h2 {
+      margin: 0;
+      border: none;
+      padding: 0;
+    }
+
+    button {
+      background: none;
+      border: 1px solid #ddd;
+      padding: 4px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+
+      &:hover {
+        background: #f5f5f5;
+        color: #d93025;
+        border-color: #d93025;
+      }
+    }
   }
 
   .logs-container {
@@ -267,25 +646,33 @@ const handleEvent = (type: string, val: string) => {
     color: #fff;
     padding: 16px;
     border-radius: 8px;
-    height: 150px;
+    height: 200px;
     overflow-y: auto;
     font-family: monospace;
     font-size: 0.9rem;
 
-    .log-item {
-      margin-bottom: 4px;
+    .empty-logs {
+      color: #666;
+      font-style: italic;
+      text-align: center;
+      margin-top: 80px;
+    }
+
+    .log-entry {
+      padding: 4px 0;
       border-bottom: 1px solid #333;
-      padding-bottom: 4px;
 
       &:last-child {
         border-bottom: none;
       }
     }
-
-    .no-logs {
-      color: #666;
-      font-style: italic;
-    }
   }
+}
+
+.footer {
+  text-align: center;
+  padding: 20px;
+  color: #888;
+  font-size: 0.9rem;
 }
 </style>

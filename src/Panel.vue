@@ -4,7 +4,7 @@
  * @description  : Color Picker Panel Component
  * @updateInfo   : Extracted from index.vue
  * @Date         : 2025-12-26 15:30:00
- * @LastEditTime : 2025-12-26 11:52:54
+ * @LastEditTime : 2025-12-26 16:17:15
 -->
 
 <script lang="ts" setup>
@@ -65,6 +65,7 @@ const emit = defineEmits(['update:modelValue', 'change', 'close']);
 
 // State
 const isDragging = ref(false);
+const savedSolidColor = ref<HSVA | null>(null);
 
 // Recent Colors State
 interface RecentColorItem {
@@ -604,10 +605,13 @@ const selectSwatch = (c: string, fromRecent = false) => {
 };
 
 const handleModeChange = (newMode: 'solid' | 'gradient') => {
-  mode.value = newMode;
-  // When switching, we might want to convert current color
-  // But for now, just keep state separate or use default
+  if (mode.value === newMode) return;
+
   if (newMode === 'gradient') {
+    // Save current solid color before switching
+    savedSolidColor.value = { ...color.value };
+
+    mode.value = 'gradient';
     if (!gradient.value.stops.length) {
       gradient.value.stops = [
         { color: getCurrentSolidColor(), percent: 0, id: '1' },
@@ -618,6 +622,11 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
     // Force update to gradient string
     updateModel();
   } else {
+    mode.value = 'solid';
+    // Restore solid color if available
+    if (savedSolidColor.value) {
+      color.value = { ...savedSolidColor.value };
+    }
     // Switch to solid: maybe pick the first stop's color or keep current
     updateModel();
   }
@@ -628,18 +637,10 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
   <div class="ik-color-picker__panel" ref="panelRef">
     <!-- Tabs -->
     <div class="ik-color-picker__tabs">
-      <div
-        class="tab-item"
-        :class="{ active: mode === 'solid' }"
-        @click="handleModeChange('solid')"
-      >
+      <div class="tab-item" :class="{ active: mode === 'solid' }" @click="handleModeChange('solid')">
         单色
       </div>
-      <div
-        class="tab-item"
-        :class="{ active: mode === 'gradient' }"
-        @click="handleModeChange('gradient')"
-      >
+      <div class="tab-item" :class="{ active: mode === 'gradient' }" @click="handleModeChange('gradient')">
         渐变
       </div>
     </div>
@@ -657,11 +658,7 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
       <!-- Angle Slider -->
       <div class="gradient-angle-slider-wrapper" v-if="gradient.type === 'linear'">
         <div class="angle-label start">0°</div>
-        <div
-          class="gradient-angle-slider"
-          ref="gradientAngleSliderRef"
-          @mousedown="handleGradientAngleDown"
-        >
+        <div class="gradient-angle-slider" ref="gradientAngleSliderRef" @mousedown="handleGradientAngleDown">
           <div class="slider-thumb" :style="{ left: `${(gradient.degree / 360) * 100}%` }"></div>
         </div>
         <div class="angle-label end">360°</div>
@@ -669,61 +666,36 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
       </div>
 
       <div class="gradient-bar-wrapper">
-        <div
-          class="gradient-bar"
-          ref="gradientBarRef"
-          :style="gradientBarStyle"
-          @dblclick="handleGradientBarDblClick"
-        >
-          <div
-            v-for="(stop, index) in gradient.stops"
-            :key="stop.id"
-            class="gradient-stop"
+        <div class="gradient-bar" ref="gradientBarRef" :style="gradientBarStyle" @dblclick="handleGradientBarDblClick">
+          <div v-for="(stop, index) in gradient.stops" :key="stop.id" class="gradient-stop"
             :class="{ selected: selectedStopId === stop.id }"
-            :style="{ left: `${stop.percent}%`, background: stop.color }"
-            @mousedown="(e) => handleStopDown(e, stop)"
-            @contextmenu.prevent="deleteStop(index)"
-          ></div>
+            :style="{ left: `${stop.percent}%`, background: stop.color }" @mousedown="(e) => handleStopDown(e, stop)"
+            @contextmenu.prevent="deleteStop(index)"></div>
         </div>
       </div>
     </div>
 
     <!-- Saturation/Value Panel -->
-    <div
-      class="ik-color-picker__saturation"
-      ref="svPanelRef"
-      @mousedown="handleSvDown"
-      :style="{ background: hueColorStyle }"
-    >
+    <div class="ik-color-picker__saturation" ref="svPanelRef" @mousedown="handleSvDown"
+      :style="{ background: hueColorStyle }">
       <div class="ik-color-picker__saturation--white"></div>
       <div class="ik-color-picker__saturation--black"></div>
-      <div
-        class="ik-color-picker__saturation--cursor"
-        :style="{
-          left: `${color.s * 100}%`,
-          top: `${(1 - color.v) * 100}%`,
-        }"
-      ></div>
+      <div class="ik-color-picker__saturation--cursor" :style="{
+        left: `${color.s * 100}%`,
+        top: `${(1 - color.v) * 100}%`,
+      }"></div>
     </div>
 
     <!-- Sliders Row -->
     <div class="ik-color-picker__sliders-row">
       <div class="sliders-col">
         <!-- Hue Slider -->
-        <div
-          class="ik-color-picker__slider hue-slider"
-          ref="hueSliderRef"
-          @mousedown="handleHueDown"
-        >
+        <div class="ik-color-picker__slider hue-slider" ref="hueSliderRef" @mousedown="handleHueDown">
           <div class="slider-thumb" :style="{ left: `${(color.h / 360) * 100}%` }"></div>
         </div>
         <!-- Alpha Slider -->
-        <div
-          class="ik-color-picker__slider alpha-slider"
-          v-if="enableAlpha"
-          ref="alphaSliderRef"
-          @mousedown="handleAlphaDown"
-        >
+        <div class="ik-color-picker__slider alpha-slider" v-if="enableAlpha" ref="alphaSliderRef"
+          @mousedown="handleAlphaDown">
           <div class="alpha-bg"></div>
           <div class="alpha-gradient" :style="{ background: alphaGradientStyle }"></div>
           <div class="slider-thumb" :style="{ left: `${color.a * 100}%` }"></div>
@@ -752,22 +724,13 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
         <!-- RGB Inputs -->
         <div v-if="inputFormat === 'RGBA'" class="input-group rgb-inputs">
           <div class="rgb-item">
-            <input
-              :value="rgbInput.r"
-              @input="(e) => updateRgb('r', (e.target as HTMLInputElement).value)"
-            />
+            <input :value="rgbInput.r" @input="(e) => updateRgb('r', (e.target as HTMLInputElement).value)" />
           </div>
           <div class="rgb-item">
-            <input
-              :value="rgbInput.g"
-              @input="(e) => updateRgb('g', (e.target as HTMLInputElement).value)"
-            />
+            <input :value="rgbInput.g" @input="(e) => updateRgb('g', (e.target as HTMLInputElement).value)" />
           </div>
           <div class="rgb-item">
-            <input
-              :value="rgbInput.b"
-              @input="(e) => updateRgb('b', (e.target as HTMLInputElement).value)"
-            />
+            <input :value="rgbInput.b" @input="(e) => updateRgb('b', (e.target as HTMLInputElement).value)" />
           </div>
           <div class="rgb-item" v-if="enableAlpha">
             <input v-model="alphaPercentage" type="number" min="0" max="100" />
@@ -787,14 +750,8 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
         <span class="clear-recent" @click="clearRecentColors" title="清除最近使用">×</span>
       </div>
       <div class="swatches-list">
-        <div
-          v-for="item in recentColorsList"
-          :key="item.color"
-          class="swatch-item"
-          :style="{ background: item.color }"
-          :title="`${item.color} (${formatTime(item.timestamp)})`"
-          @click="selectSwatch(item.color, true)"
-        ></div>
+        <div v-for="item in recentColorsList" :key="item.color" class="swatch-item" :style="{ background: item.color }"
+          :title="`${item.color} (${formatTime(item.timestamp)})`" @click="selectSwatch(item.color, true)"></div>
       </div>
     </div>
 
@@ -802,13 +759,8 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
     <div class="ik-color-picker__swatches">
       <div class="swatches-title">系统预设颜色</div>
       <div class="swatches-list">
-        <div
-          v-for="c in swatchColors"
-          :key="c"
-          class="swatch-item"
-          :style="{ background: c }"
-          @click="selectSwatch(c)"
-        ></div>
+        <div v-for="c in swatchColors" :key="c" class="swatch-item" :style="{ background: c }" @click="selectSwatch(c)">
+        </div>
       </div>
     </div>
   </div>
@@ -816,43 +768,50 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
 
 <style lang="scss" scoped>
 .ik-color-picker {
+  user-select: none;
   &__panel {
+    font-size: 14px;
     z-index: 1000;
-    background: #2b2b2b;
+    background: var(--dp-cp-bg-panel);
     /* Dark mode panel bg */
     box-shadow:
-      0 3px 14px 2px rgba(0, 0, 0, 0.3),
-      0 8px 10px 1px rgba(0, 0, 0, 0.2),
-      0 5px 5px -3px rgba(0, 0, 0, 0.4);
-    border: 1px solid #444;
+      0 3px 14px 2px var(--dp-cp-shadow-color-base),
+      0 8px 10px 1px var(--dp-cp-shadow-color-light),
+      0 5px 5px -3px var(--dp-cp-shadow-color-dark);
     border-radius: 3px;
-    padding: 12px;
+    padding: 10px;
     width: 280px;
     box-sizing: border-box;
+    user-select: none;
   }
 
   &__tabs {
     display: flex;
     margin-bottom: 12px;
-    border-bottom: 1px solid #444;
+    border-bottom: 1px solid var(--dp-cp-border-color);
+    padding: 4px;
+    background: var(--dp-cp-bg-tab-divider);
     /* Dark mode divider */
 
     .tab-item {
-      padding: 4px 12px;
+      flex: 1;
+      text-align: center;
+      padding: 0 12px;
       cursor: pointer;
       border-radius: 2px 2px 0 0;
-      color: #999;
+      color: var(--dp-cp-text-secondary);
+      background: var(--dp-cp-bg-tab);
 
       &.active {
-        color: #4096ff;
+        color: var(--dp-cp-primary-text);
         /* Active color */
         font-weight: 500;
-        background: #3a3a3a;
+        background: var(--dp-cp-bg-tab-active);
         /* Active bg */
       }
 
       &:hover {
-        color: #4096ff;
+        color: var(--dp-cp-primary-text);
       }
     }
   }
@@ -867,16 +826,16 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
       .gradient-type-select {
         width: 100%;
         height: 24px;
-        border: 1px solid #444;
+        border: 1px solid var(--dp-cp-border-color);
         border-radius: 2px;
         font-size: 12px;
         outline: none;
-        color: #e0e0e0;
-        background: #333;
+        color: var(--dp-cp-text-color);
+        background: var(--dp-cp-bg-input);
         cursor: pointer;
 
         &:focus {
-          border-color: #0052d9;
+          border-color: var(--dp-cp-primary-color);
         }
       }
     }
@@ -892,14 +851,14 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
 
       .angle-label {
         font-size: 10px;
-        color: #999;
+        color: var(--dp-cp-text-secondary);
         width: 24px;
         text-align: center;
       }
 
       .current-angle {
         font-size: 10px;
-        color: #e0e0e0;
+        color: var(--dp-cp-text-color);
         width: 30px;
         text-align: right;
         font-variant-numeric: tabular-nums;
@@ -908,7 +867,7 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
       .gradient-angle-slider {
         flex: 1;
         height: 4px;
-        background: #444;
+        background: var(--dp-cp-border-color);
         border-radius: 2px;
         position: relative;
         cursor: pointer;
@@ -918,15 +877,15 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
           top: 50%;
           width: 8px;
           height: 8px;
-          background: #fff;
+          background: var(--dp-cp-text-inverse);
           border-radius: 50%;
-          box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+          box-shadow: 0 0 2px var(--dp-cp-shadow-color-heavy);
           transform: translate(-50%, -50%);
           pointer-events: none;
         }
 
         &:hover {
-          background: #555;
+          background: var(--dp-cp-border-color-dark);
         }
       }
     }
@@ -943,12 +902,8 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
       border-radius: 6px;
       position: relative;
       cursor: pointer;
-      box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.5);
-      background-image:
-        linear-gradient(45deg, #555 25%, transparent 25%),
-        linear-gradient(-45deg, #555 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, #555 75%),
-        linear-gradient(-45deg, transparent 75%, #555 75%);
+      box-shadow: inset 0 0 2px var(--dp-cp-shadow-color-heavy);
+      background-image: var(--dp-cp-bg-checkerboard);
       background-size: 6px 6px;
 
       .gradient-stop {
@@ -956,15 +911,15 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
         top: 50%;
         width: 10px;
         height: 10px;
-        border: 2px solid #fff;
+        border: 2px solid var(--dp-cp-text-inverse);
         border-radius: 50%;
-        box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 0 2px var(--dp-cp-shadow-color-heavy);
         transform: translate(-50%, -50%);
         cursor: grab;
         background: currentColor;
 
         &.selected {
-          border-color: #0052d9;
+          border-color: var(--dp-cp-primary-color);
           transform: translate(-50%, -50%) scale(1.2);
           z-index: 2;
         }
@@ -982,7 +937,7 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
     margin-bottom: 12px;
 
     &--white {
-      background: linear-gradient(to right, #fff, rgba(255, 255, 255, 0));
+      background: var(--dp-cp-gradient-white);
       position: absolute;
       top: 0;
       left: 0;
@@ -991,7 +946,7 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
     }
 
     &--black {
-      background: linear-gradient(to top, #000, rgba(0, 0, 0, 0));
+      background: var(--dp-cp-gradient-black);
       position: absolute;
       top: 0;
       left: 0;
@@ -1003,9 +958,9 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
       position: absolute;
       width: 12px;
       height: 12px;
-      border: 1px solid #fff;
+      border: 1px solid var(--dp-cp-text-inverse);
       border-radius: 50%;
-      box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 0 2px var(--dp-cp-shadow-color-heavy);
       transform: translate(-50%, -50%);
       pointer-events: none;
     }
@@ -1029,18 +984,14 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
       height: 32px;
       border-radius: 2px;
       overflow: hidden;
-      background-image:
-        linear-gradient(45deg, #555 25%, transparent 25%),
-        linear-gradient(-45deg, #555 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, #555 75%),
-        linear-gradient(-45deg, transparent 75%, #555 75%);
+      background-image: var(--dp-cp-bg-checkerboard);
       background-size: 8px 8px;
       background-position:
         0 0,
         0 4px,
         4px -4px,
         -4px 0px;
-      border: 1px solid #444;
+      border: 1px solid var(--dp-cp-border-color);
 
       .preview-block {
         width: 100%;
@@ -1060,49 +1011,36 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
       top: 50%;
       width: 12px;
       height: 12px;
-      background: #fff;
+      background: var(--dp-cp-text-inverse);
       border-radius: 50%;
-      box-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 0 2px var(--dp-cp-shadow-color-deep);
       transform: translate(-50%, -50%);
       pointer-events: none;
     }
-  }
 
-  .hue-slider {
-    background: linear-gradient(
-      to right,
-      #f00 0%,
-      #ff0 17%,
-      #0f0 33%,
-      #0ff 50%,
-      #00f 67%,
-      #f0f 83%,
-      #f00 100%
-    );
-  }
-
-  .alpha-slider {
-    .alpha-bg {
-      position: absolute;
-      inset: 0;
-      border-radius: 5px;
-      background-image:
-        linear-gradient(45deg, #555 25%, transparent 25%),
-        linear-gradient(-45deg, #555 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, #555 75%),
-        linear-gradient(-45deg, transparent 75%, #555 75%);
-      background-size: 6px 6px;
-      background-position:
-        0 0,
-        0 3px,
-        3px -3px,
-        -3px 0px;
+    &.hue-slider {
+      background: var(--dp-cp-gradient-hue);
     }
 
-    .alpha-gradient {
-      position: absolute;
-      inset: 0;
-      border-radius: 5px;
+    &.alpha-slider {
+      .alpha-bg {
+        position: absolute;
+        inset: 0;
+        border-radius: 5px;
+        background-image: var(--dp-cp-bg-checkerboard);
+        background-size: 6px 6px;
+        background-position:
+          0 0,
+          0 3px,
+          3px -3px,
+          -3px 0px;
+      }
+
+      .alpha-gradient {
+        position: absolute;
+        inset: 0;
+        border-radius: 5px;
+      }
     }
   }
 
@@ -1118,16 +1056,16 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
       .format-select {
         width: 100%;
         height: 24px;
-        border: 1px solid #444;
+        border: 1px solid var(--dp-cp-border-color);
         border-radius: 2px;
         font-size: 12px;
         outline: none;
-        color: #e0e0e0;
-        background: #333;
+        color: var(--dp-cp-text-color);
+        background: var(--dp-cp-bg-input);
         cursor: pointer;
 
         &:focus {
-          border-color: #0052d9;
+          border-color: var(--dp-cp-primary-color);
         }
       }
     }
@@ -1144,17 +1082,17 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
       input {
         width: 100%;
         height: 24px;
-        border: 1px solid #444;
+        border: 1px solid var(--dp-cp-border-color);
         border-radius: 2px;
         padding: 0 4px;
         font-size: 12px;
         outline: none;
-        color: #e0e0e0;
-        background: #333;
+        color: var(--dp-cp-text-color);
+        background: var(--dp-cp-bg-input);
         text-align: center;
 
         &:focus {
-          border-color: #0052d9;
+          border-color: var(--dp-cp-primary-color);
         }
       }
     }
@@ -1172,7 +1110,7 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
 
     .swatches-title {
       font-size: 12px;
-      color: #e0e0e0;
+      color: var(--dp-cp-text-color);
       margin-bottom: 8px;
       display: flex;
       justify-content: space-between;
@@ -1182,11 +1120,11 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
         cursor: pointer;
         font-size: 16px;
         line-height: 1;
-        color: #999;
+        color: var(--dp-cp-text-secondary);
         font-weight: bold;
 
         &:hover {
-          color: #ff4d4f;
+          color: var(--dp-cp-danger-color);
         }
       }
     }
@@ -1202,13 +1140,13 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
       height: 18px;
       border-radius: 2px;
       cursor: pointer;
-      border: 1px solid #444;
+      border: 1px solid var(--dp-cp-border-color);
       position: relative;
 
       &:hover {
         transform: scale(1.1);
         z-index: 1;
-        box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 0 4px var(--dp-cp-shadow-color-heavy);
       }
     }
   }
