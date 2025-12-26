@@ -2,6 +2,12 @@
   "name": "dp-color-picker",
   "version": "0.0.1",
   "type": "module",
+  "homepage": "http://124.222.50.189:8082/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WFLNANA/dp-color-picker.git"
+  },
+  "author": "wfl",
   "main": "./dist/dp-color-picker.umd.js",
   "module": "./dist/dp-color-picker.es.js",
   "types": "./dist/index.d.ts",
@@ -10,7 +16,9 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && vite build",
+    "build": "pnpm build:lib",
+    "build:lib": "vue-tsc -b && vite build",
+    "build:demo": "vue-tsc -b && vite build --config vite.config.demo.ts",
     "preview": "vite preview",
     "lint": "eslint . --fix",
     "format": "prettier --write .",
