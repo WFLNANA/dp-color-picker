@@ -18,7 +18,10 @@ const colorRgb = ref('rgba(0, 150, 136, 1)');
 const colorCustomSwatches = ref('#9C27B0');
 const mySwatches = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#00FFFF', '#FF00FF'];
 
-// 6. No Recent Colors
+// 6. Radial Gradient
+const colorRadial = ref('radial-gradient(circle at center, #FF0000 0%, #00FF00 100%)');
+
+// 7. No Recent Colors
 const colorNoRecent = ref('#607D8B');
 
 // Event Log
@@ -106,9 +109,22 @@ const handleEvent = (type: string, val: string) => {
         <div class="value-display">Value: {{ colorCustomSwatches }}</div>
       </div>
 
-      <!-- 6. No Recent Colors -->
+      <!-- 6. Radial Gradient -->
       <div class="card">
-        <h3>6. No Recent Colors</h3>
+        <h3>6. Radial Gradient</h3>
+        <p class="desc">Supports radial-gradient strings.</p>
+        <div class="demo-box">
+          <DpColorPicker
+            v-model="colorRadial"
+            @change="(v: any) => handleEvent('change (radial)', v)"
+          />
+        </div>
+        <div class="value-display">Value: {{ colorRadial }}</div>
+      </div>
+
+      <!-- 7. No Recent Colors -->
+      <div class="card">
+        <h3>7. No Recent Colors</h3>
         <p class="desc"><code>:enableRecentColors="false"</code></p>
         <div class="demo-box">
           <DpColorPicker

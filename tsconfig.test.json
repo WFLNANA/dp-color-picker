@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "verbatimModuleSyntax": false,
+    "erasableSyntaxOnly": false,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "types": ["vite/client", "jest"]
+  }
+}

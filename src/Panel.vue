@@ -4,7 +4,7 @@
  * @description  : Color Picker Panel Component
  * @updateInfo   : Extracted from index.vue
  * @Date         : 2025-12-26 15:30:00
- * @LastEditTime : 2025-12-26 11:39:11
+ * @LastEditTime : 2025-12-26 11:52:54
 -->
 
 <script lang="ts" setup>
@@ -646,8 +646,16 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
 
     <!-- Gradient Bar (Visible only in Gradient Mode) -->
     <div v-if="mode === 'gradient'" class="ik-color-picker__gradient-tools">
+      <!-- Gradient Type Selector -->
+      <div class="gradient-type-row">
+        <select v-model="gradient.type" class="gradient-type-select" @change="updateModel">
+          <option value="linear">线性渐变</option>
+          <option value="radial">径向渐变</option>
+        </select>
+      </div>
+
       <!-- Angle Slider -->
-      <div class="gradient-angle-slider-wrapper">
+      <div class="gradient-angle-slider-wrapper" v-if="gradient.type === 'linear'">
         <div class="angle-label start">0°</div>
         <div
           class="gradient-angle-slider"
@@ -854,6 +862,24 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
     flex-direction: column;
     margin-bottom: 12px;
     gap: 8px;
+
+    .gradient-type-row {
+      .gradient-type-select {
+        width: 100%;
+        height: 24px;
+        border: 1px solid #444;
+        border-radius: 2px;
+        font-size: 12px;
+        outline: none;
+        color: #e0e0e0;
+        background: #333;
+        cursor: pointer;
+
+        &:focus {
+          border-color: #0052d9;
+        }
+      }
+    }
 
     .gradient-angle-slider-wrapper {
       width: 100%;

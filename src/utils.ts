@@ -4,7 +4,7 @@
  * @description  :
  * @updateInfo   :
  * @Date         : 2025-12-25 17:34:51
- * @LastEditTime : 2025-12-25 17:36:01
+ * @LastEditTime : 2025-12-26 16:00:00
  */
 export interface HSV {
   h: number;
@@ -237,22 +237,40 @@ export function parseColor(color: string): HSVA {
 }
 
 /**
- * Parse linear gradient string
+ * Parse gradient string (linear or radial)
  * e.g., "linear-gradient(90deg, #ff0000 0%, #0000ff 100%)"
+ * e.g., "radial-gradient(circle at center, #ff0000 0%, #0000ff 100%)"
  */
 export function parseGradient(str: string): GradientColor | null {
-  if (!str || !str.includes('linear-gradient')) return null;
+  if (!str) return null;
+  const isLinear = str.includes('linear-gradient');
+  const isRadial = str.includes('radial-gradient');
+  
+  if (!isLinear && !isRadial) return null;
 
-  // Simple parser
-  const degreeMatch = str.match(/(\d+)deg/);
-  const degree = degreeMatch ? parseInt(degreeMatch[1] ?? '90') : 90;
-
-  // Extract stops part
-  // This is a naive implementation, assumes comma separated stops
+  const type = isLinear ? 'linear' : 'radial';
+  
+  // Extract content inside parenthesis
   const startIndex = str.indexOf('(') + 1;
   const endIndex = str.lastIndexOf(')');
   let content = str.substring(startIndex, endIndex);
-  content = content.replace(/(\d+)deg\s*,\s*/, ''); // Remove degree part
+  
+  let degree = 90;
+
+  if (isLinear) {
+    const degreeMatch = content.match(/(\d+)deg/);
+    if (degreeMatch) {
+      degree = parseInt(degreeMatch[1] ?? '90');
+      content = content.replace(/(\d+)deg\s*,\s*/, '');
+    }
+  } else {
+    // Radial: Remove shape/position definition if present
+    // Simple heuristic: if starts with circle, ellipse, at, or side/corner keywords
+    const configMatch = content.match(/^\s*(circle|ellipse|at\s|closest-|farthest-)[^,]+,\s*/);
+    if (configMatch) {
+      content = content.replace(configMatch[0], '');
+    }
+  }
 
   const parts = content.split(/,(?![^(]*\))/); // Split by comma not inside parens
   const stops: GradientStop[] = parts.map((part, index) => {
@@ -270,7 +288,7 @@ export function parseGradient(str: string): GradientColor | null {
   });
 
   return {
-    type: 'linear',
+    type,
     degree,
     stops,
   };
@@ -281,5 +299,9 @@ export function formatGradient(grad: GradientColor): string {
     .sort((a, b) => a.percent - b.percent)
     .map((s) => `${s.color} ${Number(s.percent).toFixed(2)}%`)
     .join(', ');
+  
+  if (grad.type === 'radial') {
+    return `radial-gradient(circle at center, ${stopsStr})`;
+  }
   return `linear-gradient(${grad.degree}deg, ${stopsStr})`;
 }

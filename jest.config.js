@@ -3,11 +3,16 @@ export default {
   testEnvironment: 'jsdom',
   transform: {
     '^.+\\.vue$': '@vue/vue3-jest',
-    '^.+\\.(ts|tsx)$': ['ts-jest', {
-      tsconfig: 'tsconfig.app.json'
-    }],
+    '^.+\\.(ts|tsx)$': [
+      'ts-jest',
+      {
+        useESM: true,
+        tsconfig: 'tsconfig.test.json',
+      },
+    ],
     '^.+\\.js$': 'babel-jest',
   },
+  extensionsToTreatAsEsm: ['.ts'],
   moduleFileExtensions: ['json', 'js', 'jsx', 'ts', 'tsx', 'vue'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
