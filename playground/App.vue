@@ -26,7 +26,9 @@ const placementOptions = ['bottom-start', 'bottom-end', 'top-start', 'top-end'];
 // --- Examples State ---
 const gradientColor = ref('linear-gradient(90deg, #FF0000 0%, #00FF00 100%)');
 const minimalColor = ref('#FF5722');
-const customSwatchesColor = ref('#9C27B0');
+const customSwatchesColor = ref(
+  'linear-gradient(190deg, rgba(255, 0, 183, 1) 0.00%, rgba(0, 91, 255, 1) 49.30%, #000000 100.00%)',
+);
 const customSwatches = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#00FFFF', '#FF00FF'];
 
 // --- Code Preview ---
@@ -74,7 +76,10 @@ const handleEvent = (type: string, val: string | object) => {
         <p class="subtitle">Modern, accessible, and highly customizable color picker for Vue 3.</p>
         <div class="install-cmd">
           <code>npm install dp-color-picker</code>
-          <button class="copy-btn" @click="() => navigator?.clipboard.writeText('npm install dp-color-picker')">
+          <button
+            class="copy-btn"
+            @click="() => navigator?.clipboard.writeText('npm install dp-color-picker')"
+          >
             Copy
           </button>
         </div>
@@ -93,7 +98,10 @@ const handleEvent = (type: string, val: string | object) => {
               <p>原生支持 linear-gradient 格式。</p>
             </div>
             <div class="card-body">
-              <DpColorPicker v-model="gradientColor" @change="(v: any) => handleEvent('gradient-change', v)" />
+              <DpColorPicker
+                v-model="gradientColor"
+                @change="(v: any) => handleEvent('gradient-change', v)"
+              />
               <div class="mini-value">{{ gradientColor }}</div>
             </div>
           </div>
@@ -105,8 +113,12 @@ const handleEvent = (type: string, val: string | object) => {
               <p>无透明度，无最近使用颜色。</p>
             </div>
             <div class="card-body">
-              <DpColorPicker v-model="minimalColor" :enableAlpha="false" :enableRecentColors="false"
-                @change="(v: any) => handleEvent('minimal-change', v)" />
+              <DpColorPicker
+                v-model="minimalColor"
+                :enableAlpha="false"
+                :enableRecentColors="false"
+                @change="(v: any) => handleEvent('minimal-change', v)"
+              />
               <div class="mini-value">{{ minimalColor }}</div>
             </div>
           </div>
@@ -118,8 +130,11 @@ const handleEvent = (type: string, val: string | object) => {
               <p>传入自定义的色板数组。</p>
             </div>
             <div class="card-body">
-              <DpColorPicker v-model="customSwatchesColor" :swatchColors="customSwatches"
-                @change="(v: any) => handleEvent('swatch-change', v)" />
+              <DpColorPicker
+                v-model="customSwatchesColor"
+                :swatchColors="customSwatches"
+                @change="(v: any) => handleEvent('swatch-change', v)"
+              />
               <div class="mini-value">{{ customSwatchesColor }}</div>
             </div>
           </div>
@@ -132,18 +147,29 @@ const handleEvent = (type: string, val: string | object) => {
         <div class="playground-container">
           <!-- Left: Preview -->
           <div class="preview-panel">
-            <div class="component-wrapper"
-              :style="{ backgroundColor: playgroundConfig.overlay ? '#f5f5f5' : 'transparent' }">
-              <DpColorPicker v-model="playgroundColor" :enableAlpha="playgroundConfig.enableAlpha"
-                :format="playgroundConfig.format" :enableRecentColors="playgroundConfig.enableRecentColors"
-                :clearable="playgroundConfig.clearable" :overlay="playgroundConfig.overlay"
-                :placement="playgroundConfig.placement" :defaultColor="playgroundConfig.defaultColor"
-                :maxCount="playgroundConfig.maxCount" :zIndex="playgroundConfig.zIndex"
-                :threshold="playgroundConfig.threshold" :animationDuration="playgroundConfig.animationDuration"
+            <div
+              class="component-wrapper"
+              :style="{ backgroundColor: playgroundConfig.overlay ? '#f5f5f5' : 'transparent' }"
+            >
+              <DpColorPicker
+                v-model="playgroundColor"
+                :enableAlpha="playgroundConfig.enableAlpha"
+                :format="playgroundConfig.format"
+                :enableRecentColors="playgroundConfig.enableRecentColors"
+                :clearable="playgroundConfig.clearable"
+                :overlay="playgroundConfig.overlay"
+                :placement="playgroundConfig.placement"
+                :defaultColor="playgroundConfig.defaultColor"
+                :maxCount="playgroundConfig.maxCount"
+                :zIndex="playgroundConfig.zIndex"
+                :threshold="playgroundConfig.threshold"
+                :animationDuration="playgroundConfig.animationDuration"
                 :swatchColors="playgroundConfig.useCustomSwatches ? customSwatches : undefined"
-                :showText="playgroundConfig.showText" @change="(v: any) => handleEvent('change', v)"
+                :showText="playgroundConfig.showText"
+                @change="(v: any) => handleEvent('change', v)"
                 @clear="() => handleEvent('clear', '')"
-                @palette-change="(v: any) => handleEvent('palette-change', v)" />
+                @palette-change="(v: any) => handleEvent('palette-change', v)"
+              />
             </div>
             <div class="value-display">
               <span class="label">当前值:</span>
@@ -229,18 +255,32 @@ const handleEvent = (type: string, val: string | object) => {
 
               <div class="control-item">
                 <label>最大最近颜色数 (Max Recent Colors)</label>
-                <input type="number" v-model.number="playgroundConfig.maxCount" min="1" max="20" class="number-input" />
+                <input
+                  type="number"
+                  v-model.number="playgroundConfig.maxCount"
+                  min="1"
+                  max="20"
+                  class="number-input"
+                />
               </div>
 
               <div class="control-item">
                 <label>翻转阈值 (Flip Threshold px)</label>
-                <input type="number" v-model.number="playgroundConfig.threshold" class="number-input" />
+                <input
+                  type="number"
+                  v-model.number="playgroundConfig.threshold"
+                  class="number-input"
+                />
               </div>
 
               <div class="control-item">
                 <label>动画时长 (Animation Duration ms)</label>
-                <input type="number" v-model.number="playgroundConfig.animationDuration" step="50"
-                  class="number-input" />
+                <input
+                  type="number"
+                  v-model.number="playgroundConfig.animationDuration"
+                  step="50"
+                  class="number-input"
+                />
               </div>
             </div>
           </div>
