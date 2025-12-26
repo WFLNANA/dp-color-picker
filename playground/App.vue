@@ -59,6 +59,10 @@ const copyCode = () => {
   navigator.clipboard.writeText(codePreview.value);
   // Could add toast here
 };
+
+const handleEvent = (type: string, val: string | object) => {
+  console.log(type, val);
+};
 </script>
 
 <template>
