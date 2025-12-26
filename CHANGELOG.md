@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.4](https://github.com/WFLNANA/dp-color-picker/compare/v0.0.3...v0.0.4) (2025-12-26)
+
+
+### Bug Fixes
+
+* 修正README.md中渐变模式图片的错误链接 ([3245af7](https://github.com/WFLNANA/dp-color-picker/commit/3245af7b6dd3c4376596a7c28a19e8048ad7266c))
+
 ### [0.0.3](https://github.com/WFLNANA/dp-color-picker/compare/v0.0.2...v0.0.3) (2025-12-26)
 
 
