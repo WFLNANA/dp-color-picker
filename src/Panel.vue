@@ -986,11 +986,6 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
       overflow: hidden;
       background-image: var(--dp-cp-bg-checkerboard);
       background-size: 8px 8px;
-      background-position:
-        0 0,
-        0 4px,
-        4px -4px,
-        -4px 0px;
       border: 1px solid var(--dp-cp-border-color);
 
       .preview-block {
@@ -1029,11 +1024,6 @@ const handleModeChange = (newMode: 'solid' | 'gradient') => {
         border-radius: 5px;
         background-image: var(--dp-cp-bg-checkerboard);
         background-size: 6px 6px;
-        background-position:
-          0 0,
-          0 3px,
-          3px -3px,
-          -3px 0px;
       }
 
       .alpha-gradient {

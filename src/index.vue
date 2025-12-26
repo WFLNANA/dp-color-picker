@@ -4,7 +4,7 @@
  * @description  : 单选框组组件
  * @updateInfo   :
  * @Date         : 2025-12-25 15:34:51
- * @LastEditTime : 2025-12-26 16:32:30
+ * @LastEditTime : 2025-12-26 17:05:27
 -->
 
 <script lang="ts" setup>
@@ -97,7 +97,7 @@ const props = defineProps({
   },
   showText: {
     type: Boolean,
-    default: true,
+    default: false,
   },
 });
 
@@ -424,10 +424,10 @@ const handleClear = () => {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border: 1px solid var(--dp-cp-bg-tab-divider);
 
     &:hover {
       border-color: var(--dp-cp-primary-color);
+
       .ik-color-picker__clear {
         display: flex;
       }
@@ -439,17 +439,26 @@ const handleClear = () => {
       height: 100%;
       flex: 1;
       overflow: hidden;
+      background-image: var(--dp-cp-bg-checkerboard);
+      background-position:
+        0 0,
+        0 4px,
+        4px -4px,
+        -4px 0;
+      background-size: 8px 8px;
     }
 
     .color-block {
       width: 100%;
       height: 100%;
       border-radius: 2px;
-      /* Dark mode border */
       flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: center;
+      overflow: hidden;
+      background-image: var(--dp-cp-bg-checkerboard);
+      background-size: 6px 6px;
     }
 
     .color-text {
@@ -515,7 +524,8 @@ const handleClear = () => {
 
 /* Global styles for teleported content */
 .ik-color-picker__panel-container {
-  position: absolute; /* Using absolute but relative to body */
+  position: absolute;
+  /* Using absolute but relative to body */
   background: var(--dp-cp-bg-panel);
   border: 1px solid var(--dp-cp-border-color);
   box-shadow: 0 4px 6px var(--dp-cp-shadow-color-base);
