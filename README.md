@@ -56,9 +56,16 @@
 | `enableAlpha` | `boolean` | 否 | `true` | 是否启用透明度（Alpha）滑块及输出支持。 |
 | `format` | `'HEX' \| 'RGB'` | 否 | `'HEX'` | 颜色输出格式。⚠️ 注意：渐变模式下始终输出 CSS 渐变字符串。 |
 | `swatchColors` | `string[]` | 否 | `[...]` | 系统预设颜色列表。默认包含 20 种常用色。 |
+| `recentColors` | `string[]` | 否 | `[]` | 初始最近使用颜色列表。 |
 | `enableRecentColors`| `boolean` | 否 | `true` | 是否启用“最近使用颜色”功能。 |
 | `maxCount` | `number` | 否 | `10` | 最近使用颜色的最大记录数量（1-20）。 |
 | `clearable` | `boolean` | 否 | `false` | 是否显示清除按钮，点击可将颜色值重置为空字符串。 |
+| `zIndex` | `number` | 否 | `2000` | 弹出面板的 z-index 层级。 |
+| `placement` | `string` | 否 | `'bottom-start'` | 弹出面板位置。可选：`bottom-start`, `bottom-end`, `top-start`, `top-end`。 |
+| `threshold` | `number` | 否 | `20` | 边缘检测阈值（像素），用于自动调整弹出位置。 |
+| `animationDuration` | `number` | 否 | `200` | 面板显示/隐藏动画时长（毫秒）。 |
+| `overlay` | `boolean` | 否 | `false` | 是否显示全局遮罩层。 |
+| `showText` | `boolean` | 否 | `true` | 触发器是否显示颜色文本值。 |
 
 ### 复杂 Props 示例
 

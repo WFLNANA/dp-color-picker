@@ -29,19 +29,10 @@ const minimalColor = ref('#FF5722');
 const customSwatchesColor = ref('#9C27B0');
 const customSwatches = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#00FFFF', '#FF00FF'];
 
-// --- Event Logging ---
-const eventLogs = ref<string[]>([]);
-const handleEvent = (type: string, val: any) => {
-  const time = new Date().toLocaleTimeString();
-  const valueStr = typeof val === 'object' ? JSON.stringify(val) : String(val);
-  eventLogs.value.unshift(`[${time}] ${type}: ${valueStr}`);
-  if (eventLogs.value.length > 20) eventLogs.value.pop();
-};
-
 // --- Code Preview ---
 const codePreview = computed(() => {
   const props = [];
-  props.push(`v-model="color"`);
+  props.push(`v-model="playgroundColor"`);
   if (!playgroundConfig.enableAlpha) props.push(`:enableAlpha="false"`);
   if (playgroundConfig.format !== 'HEX') props.push(`format="${playgroundConfig.format}"`);
   if (!playgroundConfig.enableRecentColors) props.push(`:enableRecentColors="false"`);
@@ -287,18 +278,6 @@ const copyCode = () => {
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      <!-- Event Logs -->
-      <section class="logs-section">
-        <div class="logs-header">
-          <h2>事件日志</h2>
-          <button @click="clearLogs">清空</button>
-        </div>
-        <div class="logs-container">
-          <div v-if="eventLogs.length === 0" class="empty-logs">操作组件以查看事件...</div>
-          <div v-else v-for="(log, idx) in eventLogs" :key="idx" class="log-entry">{{ log }}</div>
         </div>
       </section>
     </main>
